@@ -1,0 +1,41 @@
+package com.acidhand.currencyconverter.presentation.models
+
+import com.acidhand.currencyconverter.R
+
+enum class Flags(val id: String, val flag: Int) {
+    AUD(id = "R01010", flag = R.drawable.aud),
+    AZN(id = "R01020A", flag = R.drawable.azn),
+    GBP(id = "R01035", flag = R.drawable.gbp),
+    AMD(id = "R01060", flag = R.drawable.amd),
+    BYN(id = "R01090B", flag = R.drawable.byn),
+    BGN(id = "R01100", flag = R.drawable.bgn),
+    BRL(id = "R01115", flag = R.drawable.brl),
+    HUF(id = "R01135", flag = R.drawable.huf),
+    HKD(id = "R01200", flag = R.drawable.hkd),
+    DKK(id = "R01215", flag = R.drawable.dkk),
+    USD(id = "R01235", flag = R.drawable.usd),
+    EUR(id = "R01239", flag = R.drawable.eur),
+    INR(id = "R01270", flag = R.drawable.inr),
+    KZT(id = "R01335", flag = R.drawable.kzt),
+    CAD(id = "R01350", flag = R.drawable.cad),
+    KGS(id = "R01370", flag = R.drawable.kgs),
+    CNY(id = "R01375", flag = R.drawable.cny),
+    MDL(id = "R01500", flag = R.drawable.mdl),
+    NOK(id = "R01535", flag = R.drawable.nok),
+    PLN(id = "R01565", flag = R.drawable.pln),
+    RON(id = "R01585F", flag = R.drawable.ron),
+    XDR(id = "R01589", flag = R.drawable.xdr),
+    SGD(id = "R01625", flag = R.drawable.sgd),
+    TJS(id = "R01670", flag = R.drawable.tjs),
+    TRY(id = "R01700J", flag = R.drawable.try_),
+    TMT(id = "R01710A", flag = R.drawable.tmt),
+    UZS(id = "R01717", flag = R.drawable.uzs),
+    UAH(id = "R01720", flag = R.drawable.uah),
+    CZK(id = "R01760", flag = R.drawable.czk),
+    SEK(id = "R01770", flag = R.drawable.sek),
+    CHF(id = "R01775", flag = R.drawable.chf),
+    ZAR(id = "R01810", flag = R.drawable.zar),
+    KRW(id = "R01815", flag = R.drawable.krw),
+    JPY(id = "R01820", flag = R.drawable.jpy),
+    RUR(id = "R0000", flag = R.drawable.rus)
+}

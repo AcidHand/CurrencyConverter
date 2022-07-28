@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">Currency Converter</string>
+    <string name="pager_slide_popular">Популярное</string>
+    <string name="pager_slide_favourites">Избранное</string>
+    <string name="top_bar_selected_currency">%s %s</string>
+    <string name="filter_option_alphabet_increase">по алфавиту: по возрастанию</string>
+    <string name="filter_option_alphabet_decrease">по алфавиту: по убыванию</string>
+    <string name="filter_option_value_increase">по значению: по возрастанию</string>
+    <string name="filter_option_value_decrease">по значению: по убыванию</string>
+    <string name="no_favorite_currency">Избранных валют пока нет</string>
+
+</resources>
+
