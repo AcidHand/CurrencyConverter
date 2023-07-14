@@ -1,4 +1,4 @@
-package com.acidhand.currencyconverter.presentation.screen
+package com.acidhand.currencyconverter.presentation.screen.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -6,9 +6,9 @@ import com.acidhand.currencyconverter.data.database.repository.IRoomRepository
 import com.acidhand.currencyconverter.domain.usecase.ICurrencyUseCase
 import com.acidhand.currencyconverter.presentation.models.Currency
 import com.acidhand.currencyconverter.presentation.models.FilterOption
-import com.acidhand.currencyconverter.presentation.screen.state.ActionMain
-import com.acidhand.currencyconverter.presentation.screen.state.MainState
 import com.acidhand.currencyconverter.utils.CurrencyMapper
+import com.acidhand.currencyconverter.utils.errorEvent
+import com.acidhand.currencyconverter.utils.navigationEvent
 import com.acidhand.currencyconverter.utils.provideDelegate
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -17,15 +17,14 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class MainViewModel @Inject constructor(
+class HomeViewModel @Inject constructor(
     useCase: ICurrencyUseCase,
     private val repository: IRoomRepository,
     private val mapper: CurrencyMapper
 ) : ViewModel() {
-
-    private val _state = MutableStateFlow(MainState.INITIAL)
-    private var state: MainState by _state
-    val uiState = _state.asStateFlow()
+    private val _homeState = MutableStateFlow(HomeState.INITIAL)
+    private var homeState: HomeState by _homeState
+    val uiState = _homeState.asStateFlow()
 
     init {
         useCase.fetchCurrency()
@@ -33,7 +32,7 @@ class MainViewModel @Inject constructor(
             .onEach {
                 val listRoom = mapper.mapToCurrencyFavoriteList(listRoom = repository.getRecords())
                 val list = mapper.mapCurrencyApiToCurrency(currency = it, listRoom = listRoom)
-                state = state.copy(
+                homeState = homeState.copy(
                     listCurrencyFav = listRoom,
                     listCurrency = list,
                     isFavoriteListEmpty = listRoom.isEmpty()
@@ -42,43 +41,48 @@ class MainViewModel @Inject constructor(
             .launchIn(viewModelScope)
     }
 
-    fun actions(action: ActionMain) {
+    fun actions(action: HomeAction) {
         when (action) {
-            is ActionMain.OnCurrencyFavoriteIconClick -> {
+            is HomeAction.OnCurrencyFavoriteIconClick -> {
                 onCurrencyFavoriteIconClicked(currency = action.currency)
             }
-            is ActionMain.OnTickerDropDownItemClick -> {
+
+            is HomeAction.OnTickerDropDownItemClick -> {
                 onTickerDropDownItemClicked(selectedCurrency = action.currency)
             }
-            ActionMain.ShowTickerDropDownMenu -> state = state.copy(isTickerDropMenuVisible = true)
-            ActionMain.CloseTickerDropDownMenu -> state =
-                state.copy(isTickerDropMenuVisible = false)
-            is ActionMain.OnFilterDropDownItemClick -> onFilterDropDownItemClicked(
+
+            HomeAction.ShowTickerDropDownMenu -> homeState =
+                homeState.copy(isTickerDropMenuVisible = true)
+
+            HomeAction.CloseTickerDropDownMenu -> homeState =
+                homeState.copy(isTickerDropMenuVisible = false)
+
+            is HomeAction.OnFilterDropDownItemClick -> onFilterDropDownItemClicked(
                 filterOption = action.filterOption
             )
-            ActionMain.ShowFilterDropDownMenu -> state = state.copy(isFilterDropMenuVisible = true)
-            ActionMain.CloseFilterDropDownMenu -> state =
-                state.copy(isFilterDropMenuVisible = false)
+
+            HomeAction.ShowFilterDropDownMenu -> homeState =
+                homeState.copy(isFilterDropMenuVisible = true)
+
+            HomeAction.CloseFilterDropDownMenu -> homeState =
+                homeState.copy(isFilterDropMenuVisible = false)
         }
     }
 
     private fun onCurrencyFavoriteIconClicked(currency: Currency) {
-        val index = state.listCurrency.indexOf(currency)
-        val listCurrency = state.listCurrency.toMutableList()
+        val index = homeState.listCurrency.indexOf(currency)
+        val listCurrency = homeState.listCurrency.toMutableList()
 
-        state.listCurrency[index]
+        homeState.listCurrency[index]
             .let {
-                if (!it.isFavorite) {
-                    insertRecord(currency = currency)
-                } else {
-                    deleteRecord(id = currency.idCurrency)
-                }
+                if (!it.isFavorite) insertRecord(currency = currency)
+                else deleteRecord(id = currency.idCurrency)
                 it.copy(isFavorite = !it.isFavorite)
             }
             .run { listCurrency[index] = this }
 
         val listCurrencyFav = listCurrency.filter { it.isFavorite }
-        state = state.copy(
+        homeState = homeState.copy(
             listCurrency = listCurrency,
             listCurrencyFav = listCurrencyFav,
             isFavoriteListEmpty = listCurrencyFav.isEmpty()
@@ -87,15 +91,14 @@ class MainViewModel @Inject constructor(
 
     private fun onTickerDropDownItemClicked(selectedCurrency: Currency) {
         val listCurrency = mapper.mapListUponSelectedCurrency(
-            currencyList = state.listCurrency,
+            currencyList = homeState.listCurrency,
             selectedCurrency = selectedCurrency
         )
         val listCurrencyFav = mapper.mapListUponSelectedCurrency(
-            currencyList = state.listCurrencyFav,
+            currencyList = homeState.listCurrencyFav,
             selectedCurrency = selectedCurrency
         )
-
-        state = state.copy(
+        homeState = homeState.copy(
             selectedCurrency = selectedCurrency,
             isTickerDropMenuVisible = false,
             listCurrency = listCurrency,
@@ -105,12 +108,12 @@ class MainViewModel @Inject constructor(
 
     private fun onFilterDropDownItemClicked(filterOption: FilterOption) {
         val listCurrencyFiltered = when (filterOption) {
-            FilterOption.ALPHABET_INCREASE -> state.listCurrency.sortedBy { it.charCode }
-            FilterOption.ALPHABET_DECREASE -> state.listCurrency.sortedByDescending { it.charCode }
-            FilterOption.VALUE_INCREASE -> state.listCurrency.sortedBy { it.value }
-            else -> state.listCurrency.sortedByDescending { it.value }
+            FilterOption.ALPHABET_INCREASE -> homeState.listCurrency.sortedBy { it.charCode }
+            FilterOption.ALPHABET_DECREASE -> homeState.listCurrency.sortedByDescending { it.charCode }
+            FilterOption.VALUE_INCREASE -> homeState.listCurrency.sortedBy { it.value }
+            else -> homeState.listCurrency.sortedByDescending { it.value }
         }
-        state = state.copy(
+        homeState = homeState.copy(
             isFilterDropMenuVisible = false,
             listCurrency = listCurrencyFiltered
         )

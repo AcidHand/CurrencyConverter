@@ -1,20 +1,21 @@
-package com.acidhand.currencyconverter.presentation.screen.state
+package com.acidhand.currencyconverter.presentation.screen.home
 
 import com.acidhand.currencyconverter.R
 import com.acidhand.currencyconverter.presentation.models.Currency
 import com.acidhand.currencyconverter.presentation.models.FilterOption
+import com.acidhand.currencyconverter.utils.NavigationEvent
 
-data class MainState(
+data class HomeState(
     val listCurrency: List<Currency>,
     val listCurrencyFav: List<Currency>,
     val selectedCurrency: Currency,
     val listFilterOptions: List<FilterOption>,
     val isTickerDropMenuVisible: Boolean,
     val isFilterDropMenuVisible: Boolean,
-    val isFavoriteListEmpty: Boolean
+    val isFavoriteListEmpty: Boolean,
 ) {
     companion object {
-        val INITIAL = MainState(
+        val INITIAL = HomeState(
             selectedCurrency = Currency(
                 idCurrency = "R00000",
                 flag = R.drawable.rus,
@@ -29,7 +30,8 @@ data class MainState(
             listFilterOptions = FilterOption.values().toList(),
             isTickerDropMenuVisible = false,
             isFilterDropMenuVisible = false,
-            isFavoriteListEmpty = false
+            isFavoriteListEmpty = false,
+
         )
     }
 }

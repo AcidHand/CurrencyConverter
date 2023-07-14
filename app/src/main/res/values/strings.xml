@@ -8,6 +8,9 @@
     <string name="filter_option_value_increase">по значению: по возрастанию</string>
     <string name="filter_option_value_decrease">по значению: по убыванию</string>
     <string name="no_favorite_currency">Избранных валют пока нет</string>
+    <string name="blocked_try_later">Вы заблокированы. Повторите позже</string>
+    <string name="blocked_limit_exceeded">Превышен лимит попыток. Вы заблокированы</string>
+    <string name="wrong_code_attempts_dec">Неверный код. Осталось попыток: %d</string>
 
 </resources>
 

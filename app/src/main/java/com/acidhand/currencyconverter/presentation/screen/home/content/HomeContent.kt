@@ -1,11 +1,11 @@
-package com.acidhand.currencyconverter.presentation.screen.composable
+package com.acidhand.currencyconverter.presentation.screen.home.content
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -16,7 +16,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -28,10 +27,10 @@ import com.google.accompanist.pager.rememberPagerState
 import kotlinx.coroutines.launch
 import com.acidhand.currencyconverter.presentation.models.Currency
 import com.acidhand.currencyconverter.presentation.models.Slide
-import com.acidhand.currencyconverter.presentation.screen.state.ActionMain
-import com.acidhand.currencyconverter.presentation.screen.state.MainState
+import com.acidhand.currencyconverter.presentation.screen.home.HomeAction
+import com.acidhand.currencyconverter.presentation.screen.home.HomeState
 
-private val statePreview = MainState(
+private val homeStatePreview = HomeState(
     listCurrency = listOf(
         Currency(
             idCurrency = "R00000",
@@ -74,7 +73,7 @@ private val statePreview = MainState(
     listFilterOptions = emptyList(),
     isTickerDropMenuVisible = false,
     isFilterDropMenuVisible = false,
-    isFavoriteListEmpty = false
+    isFavoriteListEmpty = false,
 )
 
 @Preview
@@ -82,24 +81,29 @@ private val statePreview = MainState(
 private fun Preview() {
     CurrencyConverterTheme {
         Surface {
-            MainContent(uiState = statePreview,
-                actions = {})
+            HomeContent(state = homeStatePreview, actions = {})
         }
     }
 }
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
-fun MainContent(uiState: MainState, actions: (ActionMain) -> Unit) {
+fun HomeContent(state: HomeState, actions: (HomeAction) -> Unit) {
     Column {
-        Box(modifier = Modifier.fillMaxSize()) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colors.primary)
+                .padding(bottom = 10.dp)
+        ) {
             val pagerState = rememberPagerState()
             val coroutineScope = rememberCoroutineScope()
 
             TabRow(
                 modifier = Modifier
                     .padding(top = 20.dp)
-                    .align(Alignment.BottomCenter),
+                    .align(Alignment.BottomCenter)
+                    .background(MaterialTheme.colors.primary),
                 selectedTabIndex = pagerState.currentPage,
                 backgroundColor = Color.Transparent,
                 contentColor = Color.Transparent,
@@ -119,10 +123,11 @@ fun MainContent(uiState: MainState, actions: (ActionMain) -> Unit) {
                             modifier = Modifier
                                 .height(50.dp)
                                 .fillMaxWidth()
+                                .padding(horizontal = 8.dp)
                                 .background(
-                                    color = MaterialTheme.colors.secondary.copy(
-                                        alpha = if (pagerState.currentPage == index) 1f else 0.3f
-                                    )
+                                    color =
+                                    if (pagerState.currentPage == index) MaterialTheme.colors.primaryVariant
+                                    else Color.LightGray, shape = RoundedCornerShape(4.dp)
                                 ),
                             contentAlignment = Alignment.Center,
                         ) {
@@ -142,38 +147,35 @@ fun MainContent(uiState: MainState, actions: (ActionMain) -> Unit) {
                 when (Slide.values()[page]) {
                     Slide.POPULAR -> {
                         LazyColumn(
-                            modifier = Modifier.background(
-                                color = MaterialTheme.colors.background
-                            )
+                            modifier = Modifier
+                                .background(MaterialTheme.colors.background)
+                                .padding(bottom = 16.dp)
                         ) {
-                            items(uiState.listCurrency) {
+                            items(state.listCurrency) {
                                 CurrencyItem(currency = it,
                                     onClick = {
                                         actions(
-                                            ActionMain.OnCurrencyFavoriteIconClick(
-                                                currency = it
-                                            )
+                                            HomeAction.OnCurrencyFavoriteIconClick(currency = it)
                                         )
                                     })
                             }
                         }
                     }
+
                     Slide.FAVORITES -> {
-                        if (uiState.isFavoriteListEmpty) {
-                            EmptyFavoritesContent()
-                        } else {
+                        if (state.isFavoriteListEmpty) EmptyFavoritesContent()
+                        else {
                             LazyColumn(
                                 modifier = Modifier
                                     .fillMaxSize()
                                     .background(color = MaterialTheme.colors.background)
+                                    .padding(bottom = 16.dp)
                             ) {
-                                items(uiState.listCurrencyFav) {
+                                items(state.listCurrencyFav) {
                                     CurrencyItem(currency = it,
                                         onClick = {
                                             actions(
-                                                ActionMain.OnCurrencyFavoriteIconClick(
-                                                    currency = it
-                                                )
+                                                HomeAction.OnCurrencyFavoriteIconClick(currency = it)
                                             )
                                         }
                                     )
@@ -188,38 +190,43 @@ fun MainContent(uiState: MainState, actions: (ActionMain) -> Unit) {
 }
 
 @Composable
-private fun CurrencyItem(
-    currency: Currency,
-    onClick: () -> Unit
-) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceAround,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Image(
-            painter = painterResource(id = currency.flag),
-            modifier = Modifier.size(80.dp),
-            contentDescription = null,
-        )
-        Text(
-            text = currency.nominal,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.width(50.dp),
-        )
-        Text(text = currency.charCode)
-        Text(text = currency.value)
-        IconButton(onClick = { onClick() }) {
-            Icon(
-                imageVector = if (currency.isFavorite) {
-                    Icons.Filled.Favorite
-                } else {
-                    Icons.Filled.FavoriteBorder
-                },
-                tint = MaterialTheme.colors.primaryVariant,
-                contentDescription = null
+private fun CurrencyItem(currency: Currency, onClick: () -> Unit) {
+    Column(modifier = Modifier.fillMaxWidth()) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Image(
+                painter = painterResource(id = currency.flag),
+                modifier = Modifier
+                    .size(60.dp)
+                    .padding(start = 16.dp),
+                contentDescription = null,
             )
+            Text(
+                text = currency.nominal,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.width(50.dp),
+            )
+            Text(text = currency.charCode)
+            Text(text = currency.value)
+            IconButton(onClick = { onClick() }) {
+                Icon(
+                    imageVector =
+                    if (currency.isFavorite) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
+                    tint = MaterialTheme.colors.primaryVariant,
+                    modifier = Modifier.padding(end = 16.dp),
+                    contentDescription = null
+                )
+            }
         }
+        Divider(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp)
+                .background(Color.DarkGray)
+        )
     }
 }
 
