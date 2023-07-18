@@ -1,4 +1,7 @@
 Приложение - конвертер валют
 
-СТЭК: Jetpack Compose, MVVM, DI(Hilt), Repository(Room), Coroutines(Flow), Volley, Clean architecture.
-![converter screen](https://user-images.githubusercontent.com/105292916/181458810-a0fe65a5-f28d-4c31-92f1-86ab8aceab7f.png)
+СТЭК: Jetpack Compose, MVI, DI(Hilt), Repository(Room), Coroutines(Flow), Clean architecture, DataStore.
+![preview](https://github.com/AcidHand/CurrencyConverter/assets/105292916/e2d61df3-eb41-43e3-bc8f-bb190ac1bb5e)
+
+
+
