@@ -243,12 +243,12 @@ private fun EmptyFavoritesContent() {
         ) {
             Text(
                 text = stringResource(id = R.string.no_favorite_currency),
-                color = Color.Black.copy(alpha = 0.3f),
+                color = Color.LightGray,
             )
             Icon(
                 imageVector = Icons.Filled.Paid,
                 modifier = Modifier.size(200.dp),
-                tint = Color.Black.copy(alpha = 0.3f),
+                tint = Color.LightGray,
                 contentDescription = null
             )
         }
